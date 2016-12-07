@@ -1,6 +1,10 @@
-package br.com.faroltech.vraptor_email.ses;
+package br.com.faroltech.vraptor.vraptor_email.ses;
 
 import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Default;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
@@ -11,12 +15,22 @@ import com.amazonaws.services.simpleemail.model.Destination;
 import com.amazonaws.services.simpleemail.model.Message;
 import com.amazonaws.services.simpleemail.model.SendEmailRequest;
 
-import br.com.faroltech.vraptor_email.interfaces.EmailSender;
+import br.com.faroltech.vraptor.vraptor_email.interfaces.EmailSender;
 
 @RequestScoped
+@SES
+@Default
 public class SESEmailSender implements EmailSender {
 	
+	Logger log = LoggerFactory.getLogger(getClass());
+	
+	/**
+	 * This method defines the regions of the SES client's service calls. Callers can use this method to control which AWS region they want to work with.
+	 *  
+	 * @return the AWS Region
+	 */
 	public Regions getRegion() {
+		log.debug("Using default region (US_EAST_1)");
 		return Regions.US_EAST_1;
 	}
 
@@ -43,7 +57,7 @@ public class SESEmailSender implements EmailSender {
 				.withMessage(message);
 
 		try {
-			System.out.println("Attempting to send an email through Amazon SES by using the AWS SDK for Java...");
+			log.info("Attempting to send an email through Amazon SES by using the AWS SDK for Java...");
 
 			AmazonSimpleEmailServiceClient client = new AmazonSimpleEmailServiceClient();
 
@@ -52,10 +66,9 @@ public class SESEmailSender implements EmailSender {
 
 			// Send the email.
 			client.sendEmail(request);
-			System.out.println("Email sent!");
+			log.info("Email sent!");
 		} catch (Exception ex) {
-			System.out.println("The email was not sent.");
-			System.out.println("Error message: " + ex.getMessage());
+			log.error("The email was not sent.", ex);
 			throw ex;
 		}
 	}

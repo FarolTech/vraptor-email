@@ -1,4 +1,4 @@
-package br.com.faroltech.vraptor_email.interfaces;
+package br.com.faroltech.vraptor.vraptor_email.interfaces;
 
 public interface EmailSender {
 
